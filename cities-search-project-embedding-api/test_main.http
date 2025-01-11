@@ -1,0 +1,9 @@
+# Test your FastAPI endpoints
+
+@input = Bucharest
+@apiKey = testapikey
+GET http://127.0.0.1:8000/api/embedding/{{input}}
+Accept: application/json
+X-Api-Key: {{apiKey}}
+
+###

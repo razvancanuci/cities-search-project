@@ -1,0 +1,38 @@
+@page "/weather/{city}"
+@inject WeatherApiService HttpClient
+
+<h3>Weather in @City</h3>
+    @if (_weather is not null)
+    {
+        <p>Temperature: @_weather.Temperature</p>
+        <p>Wind: @_weather.Wind</p>
+        <p>Summary: @_weather.Description</p>
+        <p>Forecasts:</p>
+        foreach (var forecast in _weather.Forecast)
+        {
+            <p>Day @forecast.Day: @forecast.Temperature, @forecast.Wind wind</p>
+        }
+    }
+    else if (_showLoading)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <p class="show-error">Data not found or the API is not available</p>
+    }
+@code {
+    [Parameter] public string City { get; set; } = string.Empty;
+    private WeatherData? _weather;
+    private bool _showLoading = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _weather = await HttpClient.GetWeatherDataAsync(City);
+        if (_weather is null)
+        {
+            _showLoading = false;
+        }
+        StateHasChanged();
+    }
+}

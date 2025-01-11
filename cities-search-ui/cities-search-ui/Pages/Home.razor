@@ -1,0 +1,60 @@
+﻿@page "/"
+@inject WeatherApiService HttpClient
+
+<PageTitle>Search a city</PageTitle>
+<div class="search-container">
+    <EditForm Model="_searchQuery" OnValidSubmit="Search" class="align-self-center">
+        <DataAnnotationsValidator></DataAnnotationsValidator> 
+        <div class="search-bar">
+            <InputText id="searchInput" @bind-Value="_searchQuery.Input" class="form-control" placeholder="Search..."></InputText>
+            <ValidationMessage For="@(() => _searchQuery.Input)"></ValidationMessage>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+        <ValidationSummary />
+    </EditForm>
+</div>
+<br />
+@if (_results is not null && _results.Length > 0)
+{
+    foreach(var data in _results)
+    {
+        <div class="list-group">
+            <NavLink href="@($"/weather/{data.City}")" class="list-group-item list-group-item-action" aria-current="true">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">@data.City</h5>
+                    <small>[@data.Latitude, @data.Longitude]</small>
+                </div>
+                <p class="mb-1">from @data.Country with @data.Population population</p>
+            </NavLink>
+        </div>
+        <br />
+    
+    }
+}
+else if(_loadingState)
+{
+    <h3>Loading...</h3>
+}
+else if (_errorState)
+{
+    <h3 class="show-error">API went wrong</h3>
+}
+
+@code{
+    private SearchQuery _searchQuery = new();
+    private SearchResult[]? _results;
+    private bool _loadingState;
+    private bool _errorState;
+    async Task Search()
+    {
+        _loadingState = true;
+        _results = await HttpClient.GetSearchResultAsync(_searchQuery.Input!);
+        if(_results.Length == 0)
+        {
+            _errorState = true;
+        }
+        _loadingState = false;
+        StateHasChanged();
+    }
+
+}

@@ -1,0 +1,12 @@
+[package]
+name = "cities-search-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.9.0"
+serde = { version = "1.0.216", features = ["derive"] }
+reqwest = { version = "0.12.9", features = ["json"] }
+qdrant-client = "1.12.1"
+actix-cors = "0.7.0"
+dotenv = "0.7.1"
